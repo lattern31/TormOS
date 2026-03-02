@@ -1,0 +1,13 @@
+1. rewrite keyboard
+    I. handle terminal commands
+        a. write printf
+        b. write calc
+
+2. write calc gui app after writing calc command
+
+3. filesystem
+    I. make terminal command to save and edit text file?
+
+X. go github
+
+X. test on real hardware (daaamn)
