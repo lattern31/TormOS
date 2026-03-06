@@ -30,10 +30,178 @@ void debug_point(Point_3d_t p) {
     vga_terminal_index[1] = 0;
 }
 
-void handle_command(char *command) {
-    for (int i = 0; i < 256; i++) {
+void handle_calc_command(char *command) {
+    //  need to refactore
+    int i = 4; //  after word calc
+    if (command[i] == '\0') {
+        vga_terminal_print("bad argument");
+        return;
     }
-    vga_terminal_print(command);
+    while (command[i] == ' ') {
+        i++;
+    }
+    if (command[i] == '\0') {
+        vga_terminal_print("bad argument");
+        return;
+    }
+
+    double numbers[16] = {0};
+    double *numbers_ptr = numbers;
+    char operations[15] = {0};
+    char *op_ptr = operations;
+    char number_buffer[16] = {0};
+    char *n_ptr = number_buffer;
+
+    char first_c = command[i];
+    if (first_c == '-' || first_c == '.' || (first_c >= '0' && first_c <= '9')) {
+        *n_ptr++ = first_c;
+    } else {
+        vga_terminal_print("invalid argument");
+        return;
+    }
+
+    i++; //  also should look at previous symbol
+         //  if prev was space all crashes dumbass
+    char prev_c = first_c;
+    while (command[i] != '\0') {
+        char c = command[i];
+        if (c == ' ') {
+            i++;
+            continue;
+        }
+
+        switch (c) {
+            case '-':
+                if (*n_ptr == '-') { 
+                    // if prev minus went to n minus again goes to n 
+                    *n_ptr++ = c;
+                    break;
+                }
+                if (prev_c == '+' || prev_c == '-' || prev_c == '*' || prev_c == '/') {
+                    // if prev was op minus goes to number
+                    *n_ptr++ = c;
+                    break;
+                }
+            case '+':
+            case '*':
+            case '/':
+                if (!(prev_c >= '0' && prev_c <= '9')) {
+                    char tmp[] = {prev_c, ' ', c, ' ', '\0'};
+                    vga_terminal_print(tmp);
+                    vga_terminal_print("invalid arg");
+                    return;
+                }
+
+                *op_ptr++ = c;
+
+                //  make unary ops and parse number
+                double number = parsenumber(number_buffer);
+                *numbers_ptr++ = number;
+
+                for (int j = 0; j < 16; j++) {
+                    number_buffer[j] = '\0';
+                }
+                n_ptr = number_buffer;
+
+                break;
+
+            default:
+                if (c >= '0' && c <= '9') {
+                    *n_ptr++ = c;
+                }
+                break;
+        }
+        i++;
+        prev_c = c;
+    }
+
+    double number = parsenumber(number_buffer);
+
+    *numbers_ptr++ = number;
+
+
+    int q = 0;
+    while (operations[q] != '\0') {
+        if (operations[q] == '*' || operations[q] == '/') {
+            double result;
+            if (operations[q] == '*') {
+                result = numbers[q] * numbers[q+1];
+            } else if (operations[q] == '/') {
+                result = numbers[q] / numbers[q+1];
+            }
+
+            numbers[q] = result;
+            int w = q+1;
+            while (w < 14) {
+                numbers[w] = numbers[w+1];
+                w++;
+            }
+            w = q;
+            while (w < 14) {
+                operations[w] = operations[w+1];
+                w++;
+            }
+            q = 0; continue;
+        }
+        q++;
+    }
+
+    q = 0;
+    while (operations[q] != '\0') {
+        if (operations[q] == '+' || operations[q] == '-') {
+            double result;
+            if (operations[q] == '+') {
+                result = numbers[q] + numbers[q+1];
+            } else if (operations[q] == '-') {
+                result = numbers[q] - numbers[q+1];
+            }
+
+            numbers[q] = result;
+            int w = q+1;
+            while (w < 14) {
+                numbers[w] = numbers[w+1];
+                w++;
+            }
+            w = q;
+            while (w < 14) {
+                operations[w] = operations[w+1];
+                w++;
+            }
+            q = 0;
+            continue;
+        }
+        q++;
+    }
+
+    char buf[16];
+    dbl_to_str(buf, numbers[0]);
+    vga_terminal_print(buf);
+}
+
+void handle_command(char *command) {
+    //  actually handling command here
+    if (startswith(command, "calc")) {
+        handle_calc_command(command);
+    } else if (startswith(command, "yo")) {
+        char buf[16];
+        dbl_to_str(buf, -1.4);
+        vga_terminal_print(buf); 
+    } else {
+        vga_terminal_print(command); 
+    }
+
+    //  reset back to user input
+    vga_terminal_print("\n");
+    vga_terminal_history[vga_terminal_index[0]][0] = '$';
+    vga_terminal_index[1] = 1;
+
+    //  reset command buffer
+    int i = 0;
+    while (vga_terminal_command[i] != '\0') {
+        vga_terminal_command[i] = '\0';
+        i++;
+    }
+    vga_terminal_command_pointer = vga_terminal_command;
 }
 
 void handle_keyboard() {
@@ -48,16 +216,14 @@ void handle_keyboard() {
 
         if (tab == 0) {
             char str[2] = {buffer[0], '\0'};
+
+            vga_terminal_print(buffer); //  print inputed char 
             if (str[0] == '\n') {
                 handle_command(vga_terminal_command);
-                for (int i = 0; i < 256; i++) {
-                    vga_terminal_command[i] = '\0';
-                }
-                vga_terminal_command_pointer = vga_terminal_command;
+            } else {
+                *vga_terminal_command_pointer = str[0];
+                vga_terminal_command_pointer++;
             }
-            *vga_terminal_command_pointer = str[0];
-            vga_terminal_command_pointer++;
-            vga_terminal_print(str);
         }
 
         if (tab == 1 || tab == 2) {

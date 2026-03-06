@@ -23,12 +23,11 @@ void vga_terminal_print(char s[]) {
     while (s[i] != '\0') {
         if (s[i] == '\n') {
             vga_terminal_index[0]++;
-            vga_terminal_history[vga_terminal_index[0]][0] = '$';
-            vga_terminal_index[1] = 1;
-            i++;
+            vga_terminal_index[1] = 0;
             if (vga_terminal_index[0] >= VGA_TERMINAL_HEIGHT) {
                 vga_terminal_scroll();
             }
+            i++;
             continue;
         }
         if (vga_terminal_index[1] >= VGA_TERMINAL_WIDTH) {

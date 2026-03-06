@@ -94,6 +94,7 @@ int findLen(char *s) {
 
     return last - s - 1;
 }
+
 void int_to_str(char *buf, int n) {
     const int ASCII_START_NUMBERS = 48;
     int is_negative = 0;
@@ -148,14 +149,14 @@ int char_to_int(char c) {
     }
     return digit;
 }
+
 double parsenumber(char *buf) {
     int i = 0;
     int negative_multiplier = 1;
-    if (buf[0] == '-') {
-        i = 1; // start from second char if negative
-        negative_multiplier = -1;
+    while (buf[i] == '-') {
+        negative_multiplier *= -1;
+        i++;
     }
-
     int is_fractional_part = 0;
     int n = 0;
     while (buf[i] != '\0') { // integer part
@@ -181,6 +182,7 @@ double parsenumber(char *buf) {
 
     return n;
 }
+
 int strcmp(char *str1, char *str2) {
     int i = 0;
     while (str1[i] != '\0' || str2[i] != '\0') {
@@ -191,8 +193,8 @@ int strcmp(char *str1, char *str2) {
     }
     return 1;
 }
-int startswith(char *str, char *prefix)
-{
+
+int startswith(char *str, char *prefix) {
     int i = 0;
     while (prefix[i] != '\0') {
         if  (str[i] == '\0') {
@@ -205,6 +207,7 @@ int startswith(char *str, char *prefix)
     }
     return 1;
 }
+
 void splitstr(char (*out)[10], char *str) {
     int i = 0;
     int argindex = 0;
@@ -223,6 +226,19 @@ void splitstr(char (*out)[10], char *str) {
     }
    out[argindex][strindex] = '\0';
 }
+
+int find_char(char *str, char c) { 
+    //  finds first entry
+    int i = 0;
+    while (str[i] != '\0') {
+        if (str[i] == c) {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
+
 double calc(double a, double b, char op[2]) {
     switch (*op) {
         case '+':
