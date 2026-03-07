@@ -1,6 +1,7 @@
 #include "vga.h"
 #include "terminal.h"
 #include "3d.h"
+#import "nya.xpm"
 
 int tab = 0;
 
@@ -96,5 +97,25 @@ void draw_terminal() {
 void draw_scene(Figure_t *figures[], int quantity) {
     for (int i = 0; i < quantity; i++) {
         draw_figure(figures[i]);
+    }
+}
+
+void draw_nya_xpm(int8_t scale_size) {
+    for (int i = 0; i < 33; i++) {
+        for (int j = 0; j < 34; j++) {
+            for (int k = 0; k < 12; k++) {
+                if (nya_xpm[k+1][0] == nya_xpm[i+13][j]) {
+                    for (int q = 0; q < scale_size; q++) {
+                        for (int s = 0; s < scale_size; s++) {
+                            put_pixel((PointScreen_t){
+                                .x=320-(34*scale_size)+j*scale_size+q,
+                                .y=200-(33*scale_size)+i*scale_size+s
+                            }, k+4);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
     }
 }

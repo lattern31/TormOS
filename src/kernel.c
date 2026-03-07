@@ -9,6 +9,7 @@
 #include "vga/terminal.h"
 #include "vga/gui.h"
 #include "math.h"
+#include "timer.h"
 
 #if defined(__linux__)
 #error "This code must be compiled with a cross-compiler"
@@ -251,13 +252,14 @@ void handle_keyboard() {
 
 
 void kernel_main() {
-	//term_init();
+	term_init();
     gdt_init();
     idt_init();
     pic_init();
     ISR_init();
-
     asm volatile("sti");
+    timer_init(50);
+
 
     set_vga_mode_320x200x256();
 
@@ -269,6 +271,12 @@ void kernel_main() {
         1, (Point_3d_t){0.3, 0.5, 1}, 0.1
     );
     Figure_t *figures[] = {&cube1, &cube2, &tetrahedron1};
+
+    clear_screen(15);
+    draw_nya_xpm(5);
+    draw_string("TormOS", (PointScreen_t){50, 100}, 5);
+    render_screen();
+    timer_sleep(7000);
 
     while (1) {
         handle_keyboard();

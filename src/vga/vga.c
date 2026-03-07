@@ -104,6 +104,30 @@ void set_vga_mode_320x200x256(void) {
     set_palette_color(2, r, g, b);
     hex_to_vga(0xc9dfb1, &r, &g, &b);
     set_palette_color(3, r, g, b);
+    hex_to_vga(0x000000, &r, &g, &b);
+    set_palette_color(4, r, g, b);
+    hex_to_vga(0x1B1C1A, &r, &g, &b);
+    set_palette_color(5, r, g, b);
+    hex_to_vga(0x4D4845, &r, &g, &b);
+    set_palette_color(6, r, g, b);
+    hex_to_vga(0xCD3628, &r, &g, &b);
+    set_palette_color(7, r, g, b);
+    hex_to_vga(0x737270, &r, &g, &b);
+    set_palette_color(8, r, g, b);
+    hex_to_vga(0xD76960, &r, &g, &b);
+    set_palette_color(9, r, g, b);
+    hex_to_vga(0x8A8282, &r, &g, &b);
+    set_palette_color(10, r, g, b);
+    hex_to_vga(0xB0A5A7, &r, &g, &b);
+    set_palette_color(11, r, g, b);
+    hex_to_vga(0xEDC2C8, &r, &g, &b);
+    set_palette_color(12, r, g, b);
+    hex_to_vga(0xD1CDCE, &r, &g, &b);
+    set_palette_color(13, r, g, b);
+    hex_to_vga(0xEBE6E9, &r, &g, &b);
+    set_palette_color(14, r, g, b);
+    hex_to_vga(0xFFFFFF, &r, &g, &b);
+    set_palette_color(15, r, g, b);
 }
 
 void clear_screen(u8 color) {
@@ -136,7 +160,7 @@ void draw_character(char c, PointScreen_t start_point, int color) {
         }
     }
 }
-void draw_string(char *str, PointScreen_t start_point, int color) {
+void draw_string(char *str, PointScreen_t start_point, uint8_t color) {
     int i = 0;
     while (str[i] != '\0') {
         draw_character(str[i], (PointScreen_t){

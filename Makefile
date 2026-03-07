@@ -16,6 +16,7 @@ objects = obj/boot.o \
 		  obj/stdio.o \
 		  obj/keyboard.o \
 		  obj/pic.o \
+		  obj/timer.o \
 		  obj/kernel.o \
 
 obj/%.o: src/boot/%.s obj

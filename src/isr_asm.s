@@ -1,4 +1,4 @@
-.extern ISR_HANDLER
+.extern ISR_Handler
 
 .global ISR0
 ISR0:
@@ -12,11 +12,18 @@ ISR1:
     push $1
     jmp isr_common
 
-.global IRQ1
-IRQ1:
+.global timer_asm_handler
+timer_asm_handler:
     push $0
-    push $33  // keyboard interrupt number1
+    push $32  // PIT interrupt number
     jmp isr_common
+
+.global keyboard_asm_handler
+keyboard_asm_handler:
+    push $0
+    push $33  // keyboard interrupt number
+    jmp isr_common
+
 
 .global isr_common
 isr_common:

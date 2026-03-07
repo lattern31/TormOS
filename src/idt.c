@@ -12,6 +12,7 @@ void idt_setgate(int interrupt, void* base, uint16_t segmentDescriptor, uint8_t 
     idt[interrupt].type_attributes= flags;
     idt[interrupt].base_high = ((uint32_t)base >> 16) & 0xFFFF;
 }
+
 void idt_init() {
     idtp.limit = (sizeof(struct idt_entry) * 256) - 1;
     idtp.base = (uint32_t)&idt;
