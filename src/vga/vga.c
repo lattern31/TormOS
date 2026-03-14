@@ -1,12 +1,15 @@
-#include "../stdio.h"
 #include "vga.h"
+#include "../stdio.h"
 #include "font8x8.h"
 #include "../math.h"
+#include "../io.h"
+#include "../heap.h"
+#include "../common.h"
 
 typedef uint8_t u8;
 
-unsigned char double_buffer[DOUBLE_BUFFER_SIZE];
-// Ваши данные режима
+u8 *dbuffer = INVALID_PTR;
+
 u8 g_320x200x256[] = {
 /* MISC */
     0x63,
@@ -26,18 +29,7 @@ u8 g_320x200x256[] = {
     0x41, 0x00, 0x0F, 0x00, 0x00
 };
 
-// Вспомогательные функции для работы с портами
-static inline void outb(uint16_t port, uint8_t value) {
-    asm volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
-}
 
-static inline uint8_t inb(uint16_t port) {
-    uint8_t value;
-    asm volatile ("inb %1, %0" : "=a"(value) : "Nd"(port));
-    return value;
-}
-
-void dummy(void) {}
 void write_registers(u8 *regs) {
     u8 i;
     
@@ -82,9 +74,9 @@ void write_registers(u8 *regs) {
 
 void set_palette_color(int index, int r, int g, int b) {
     outb(DAC_WRITE_INDEX, index);  // Выбираем цвет
-    outb(DAC_DATA, r);              // Красный (0-63)
-    outb(DAC_DATA, g);              // Зеленый (0-63)
-    outb(DAC_DATA, b);              // Синий (0-63)
+    outb(DAC_DATA, r);
+    outb(DAC_DATA, g);
+    outb(DAC_DATA, b);
 }
 
 void hex_to_vga(int hex_color, int *r, int *g, int *b) {
@@ -95,6 +87,10 @@ void hex_to_vga(int hex_color, int *r, int *g, int *b) {
 
 void set_vga_mode_320x200x256(void) {
     write_registers(g_320x200x256);
+    if (dbuffer == INVALID_PTR) {
+        dbuffer = malloc(DOUBLE_BUFFER_SIZE);
+    }
+
     int r, g, b;
     hex_to_vga(0x40242f, &r, &g, &b);
     set_palette_color(0, r, g, b);
@@ -104,6 +100,7 @@ void set_vga_mode_320x200x256(void) {
     set_palette_color(2, r, g, b);
     hex_to_vga(0xc9dfb1, &r, &g, &b);
     set_palette_color(3, r, g, b);
+    // first 4 colors - https://lospec.com/palette-list/snooker-gb
     hex_to_vga(0x000000, &r, &g, &b);
     set_palette_color(4, r, g, b);
     hex_to_vga(0x1B1C1A, &r, &g, &b);
@@ -128,31 +125,31 @@ void set_vga_mode_320x200x256(void) {
     set_palette_color(14, r, g, b);
     hex_to_vga(0xFFFFFF, &r, &g, &b);
     set_palette_color(15, r, g, b);
+    // 12 colors for nya.xpm - cover
 }
 
 void clear_screen(u8 color) {
     for(int i = 0; i < 320 * 200; i++) {
-        double_buffer[i] = color;
+        dbuffer[i] = color;
     }
 }
 
 void put_pixel(PointScreen_t point, u8 color) {
     if(point.x >= 0 && point.x < 320 && point.y >= 0 && point.y < 200) {
-        double_buffer[(point.y << 8) + (point.y << 6) + point.x] = color;
+        dbuffer[(point.y << 8) + (point.y << 6) + point.x] = color;
     }
 }
 void render_screen() {
     u8 *vram = (u8*)0xA0100;
-    for (int i = 0; i < 64000; i++) {
-        vram[i] = double_buffer[i];
-        double_buffer[i] = '\0';
+    for (int i = 0; i < DOUBLE_BUFFER_SIZE; i++) {
+        vram[i] = dbuffer[i];
     }
 }
 
 void draw_character(char c, PointScreen_t start_point, int color) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            if ((font8x8_basic[c][i] >> j) & 1) {
+            if ((font8x8_basic[(uint8_t)c][i] >> j) & 1) {
                 put_pixel((PointScreen_t){
                     start_point.x+j, start_point.y+i
                 }, color);

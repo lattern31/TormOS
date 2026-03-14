@@ -14,9 +14,8 @@
 
 
 void pic_init() {
-    // Сохраняем маски
-    uint8_t pic1_mask = inb(PIC1_DATA);
-    uint8_t pic2_mask = inb(PIC2_DATA);
+    inb(PIC1_DATA);
+    inb(PIC2_DATA);
     
     // Инициализация Master PIC
     outb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);

@@ -3,8 +3,8 @@
 
 #include "vga.h"
 
-#define MAX_POINTS 50
-#define MAX_EDGES 50
+#define MAX_POINTS 16 
+#define MAX_EDGES 32
 
 typedef struct Point {
     double x;
@@ -30,6 +30,10 @@ typedef struct Figure {
     Point_3d_t coordinates;
     double local_angle;
 } Figure_t;
+
+struct StateScene{
+    Figure_t figures[4]; 
+};
 
 extern double global_angle;
 extern double test_angle;

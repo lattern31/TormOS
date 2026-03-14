@@ -37,7 +37,7 @@ Point_3d_t move_cam_by_yaw(Point_3d_t cam_point, double yaw, double speed) {
     double sin = fast_sin(yaw);
     double cos = fast_cos(yaw);
     double forward_x = sin;
-    double forward_y = 0;
+    //double forward_y = 0;
     double forward_z = cos;
     cam_point.x += forward_x * speed;
     //cam_point.y += forward_y * speed;

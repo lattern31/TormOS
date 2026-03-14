@@ -32,5 +32,6 @@ void draw_rectangular(PointScreen_t p1, PointScreen_t p2, u8 color);
 void draw_character(char c, PointScreen_t start_point, int color);
 void draw_string(char *str, PointScreen_t start_point, uint8_t color);
 void render_screen();
+extern unsigned char *dbuffer;
 
 #endif

@@ -2,7 +2,7 @@ ENTRY(start)
 
 SECTIONS
 {
-	. = 1M;
+	. = 2M;
 
 	/* Executable code */
 	.text BLOCK(4K) : ALIGN(4K)
@@ -31,4 +31,7 @@ SECTIONS
 	*(.bss)
 	}
 
+    . = ALIGN(4096);
+    kernel_end = .;
+    heap_start = . + 0x10000;
 }

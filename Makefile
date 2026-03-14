@@ -1,6 +1,6 @@
 CC=i686-elf-gcc
 LD=i686-elf-ld
-CFLAGS=-ffreestanding -nostdlib -g -c -Wall
+CFLAGS=-ffreestanding -fno-builtin -nostdlib -g -c -Wall 
 QEMU=qemu-system-i386 
 objects = obj/boot.o \
 		  obj/vga.o \
@@ -18,6 +18,11 @@ objects = obj/boot.o \
 		  obj/pic.o \
 		  obj/timer.o \
 		  obj/kernel.o \
+		  obj/memory.o \
+		  obj/heap.o \
+		  obj/string.o \
+		  obj/nparse.o \
+		  obj/shell.o \
 
 obj/%.o: src/boot/%.s obj
 	$(CC) $(CFLAGS) -o $@ $<

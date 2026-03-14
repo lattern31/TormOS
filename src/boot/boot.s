@@ -21,13 +21,16 @@
  
 // This section contains data initialised to zeroes when the kernel is loaded
 .section .bss
-	// Our C code will need a stack to run. Here, we allocate 4096 bytes (or 4 Kilobytes) for our stack.
-	// We can expand this later if we want a larger stack. For now, it will be perfectly adequate.
 	.align 16
 	stack_bottom:
-		.skip 4096 // Reserve a 4096-byte (4K) stack
+		.skip 0x4000 // Reserve a 4096-byte (4K) stack
 	stack_top:
 
+	.align 16
+    heap_start:
+        .skip 1
+
+.global stack_top
 .section .text
 	start:
 		// C is very relaxed in its requirements: All we need to do is to set up the stack.
