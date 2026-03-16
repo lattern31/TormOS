@@ -125,7 +125,12 @@ void draw_terminal(StateTerminal_t *terminal) {
             start_point_y + terminal->index[0] * 8
         }, 2);
     }
-    vga_terminal_cursor = !vga_terminal_cursor;
+    static int blink_counter = 0;
+    blink_counter++;
+    if (blink_counter >= 30) {
+        vga_terminal_cursor = !vga_terminal_cursor;
+        blink_counter = 0;
+    }
 }
 
 void draw_scene(Figure_t *figures[], int quantity) {

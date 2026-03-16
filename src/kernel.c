@@ -139,5 +139,7 @@ void kernel_main() {
         }
         draw_navbar();
         render_screen();
+
+        asm volatile("hlt");
     }
 }
